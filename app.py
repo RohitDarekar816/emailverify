@@ -44,15 +44,22 @@ def index():
 @app.route("/register", methods=["POST", "GET"])
 def register():
     if request.method == "POST":
-        email = request.json.get("email")
-        password = request.json.get("password")
-        if email:
-            user = db.collection.find({}, {"email": email})
-            print(user)
-            return jsonify({"error: Email is present in database"})
-        else:
-            user = db.collection.insert_one({"email": email, "password": password})
-            return jsonify({"Success: Registred successfully"})
+        data = request.get_json()
+        email = data.get("email")
+        password = data.get("password")
+        if not email or not password:
+            return jsonify({"error": "Email and password are required"}), 400
+
+        user = db.collection.find_one({"email": email})
+        if user:
+            return jsonify({"error": "Email is already registered"}), 409
+
+        # For production, hash the password before storing!
+        db.collection.insert_one({"email": email, "password": password})
+        return jsonify({"success": "Registered successfully"}), 201
+
+    # For GET requests, you might want to return a registration form or a message
+    return jsonify({"message": "Send a POST request to register."}), 200
 
 
 @app.route("/verify", methods=["POST"])
