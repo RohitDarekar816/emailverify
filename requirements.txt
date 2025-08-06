@@ -1,3 +1,4 @@
 flask
 email-validator
 dnspython
+pyjwt
