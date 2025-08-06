@@ -3,6 +3,7 @@ import os
 import jwt
 import pymongo
 import requests
+from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request
 from werkzeug.utils import secure_filename
 
@@ -13,10 +14,12 @@ app = Flask(__name__)
 # JWT key
 key = "7020513934"
 
+load_dotenv()
+
 # mongo connection
-client = pymongo.MongoClient(
-    "mongodb+srv://myAtlasDBUser:Lifedo4oLsIhay2w@github-webhook.p0pdz5y.mongodb.net/?retryWrites=true&w=majority&appName=Github-Webhook"
-)
+MONGOURL = os.getenv("MONGO_URI")
+
+client = pymongo.MongoClient(MONGOURL)
 db = client["emailverify"]
 collection = db["users"]
 
